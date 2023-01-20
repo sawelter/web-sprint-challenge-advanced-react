@@ -47,16 +47,82 @@ export default class AppClass extends React.Component {
     this.setState = initialState;
   }
 
-  getNextIndex = (direction) => {
-    // This helper takes a direction ("left", "up", etc) and calculates what the next index
-    // of the "B" would be. If the move is impossible because we are at the edge of the grid,
-    // this helper should return the current index unchanged.
+  incrementSteps() {
+    this.setState({steps: this.state.steps + 1});
   }
 
-  move = (evt) => {
+
+   // Move B to the left, or change the message to error if it cant be moved
+   moveLeft() {
+    let idx = this.state.index;
+    if(this.state.index !== 0 && this.state.index !== 3 && this.state.index !== 6) {
+      idx = idx - 1;
+      this.incrementSteps();
+    } else {
+      this.setState({message: "You can't go left"});
+    }
+    return idx;
+  }
+
+  // Move B to the right, or change the message to error if it cant be moved
+  moveRight() {
+    let idx = this.state.index;
+
+    if(this.state.index !== 2 && this.state.index !== 5 && this.state.index !== 8) {
+      idx = idx + 1;
+      this.incrementSteps();
+    } else {
+      this.setState({message: "You can't go right"});
+    }
+
+    return idx;
+  }
+
+  // Move B up, or change the message to error if it cant be moved
+  moveUp() {
+    let idx = this.state.index;
+
+    if(this.state.index > 2) {
+      idx -= 3;
+      this.incrementSteps();
+    } else {
+      this.setState({message: "You can't go up"});
+    }
+    return idx;
+  }
+
+  // Move B down, or change the message to error if it cant be moved
+  moveDown() {
+    let idx = this.state.index;
+
+    if(this.state.index < 6) {
+      idx += 3;
+      this.incrementSteps();
+    } else {
+      this.setState({message: "You can't go down"});
+    }
+    return idx;
+  }
+
+  // 
+  move(evt, direction) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
+    evt.preventDefault();
+
+    this.setState({message: initialMessage});
+
+    if(direction === "left") {
+      this.setState({index: this.moveLeft()});
+    } else if(direction === "right") {
+      this.setState({index: this.moveRight()});
+    } else if(direction === "up") {
+      this.setState({index: this.moveUp()});
+    } else if(direction === "down") {
+      this.setState({index: this.moveDown()});
+    }
   }
+
 
   onChange = (evt) => {
     const { value } = evt.target;
@@ -87,7 +153,7 @@ export default class AppClass extends React.Component {
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">{this.getXYMessage()}</h3>
-          <h3 id="steps">You moved {this.state.steps} time {this.state.steps === 1 ? "" : "s"}</h3>
+          <h3 id="steps">You moved {this.state.steps} time{this.state.steps === 1 ? "" : "s"}</h3>
         </div>
         <div id="grid">
           {
