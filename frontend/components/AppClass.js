@@ -1,10 +1,13 @@
 import React from 'react'
+import axios from 'axios'
 
 // Suggested initial states
 const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
+
+const URL = "http://localhost:9000/api/result";
 
 const initialState = {
   message: initialMessage,
@@ -14,22 +17,34 @@ const initialState = {
 }
 
 export default class AppClass extends React.Component {
-  // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
-  // You can delete them and build your own logic from scratch.
+
+  constructor() {
+    super();
+    this.state = initialState;
+  }
 
   getXY = () => {
-    // It it not necessary to have a state to track the coordinates.
-    // It's enough to know what index the "B" is at, to be able to calculate them.
+    const xyArray = [
+      { x: 1, y: 1},
+      { x: 2, y: 1},
+      { x: 3, y: 1},
+      { x: 1, y: 2},
+      { x: 2, y: 2},
+      { x: 3, y: 2},
+      { x: 1, y: 3},
+      { x: 2, y: 3},
+      { x: 3, y: 3},
+    ]
+    return xyArray[this.state.index];
   }
 
   getXYMessage = () => {
-    // It it not necessary to have a state to track the "Coordinates (2, 2)" message for the user.
-    // You can use the `getXY` helper above to obtain the coordinates, and then `getXYMessage`
-    // returns the fully constructed string.
+    const coordinates = this.getXY();
+    return `Coordinates (${coordinates.x}, ${coordinates.y})`
   }
 
   reset = () => {
-    // Use this helper to reset all states to their initial values.
+    this.setState = initialState;
   }
 
   getNextIndex = (direction) => {
@@ -44,11 +59,26 @@ export default class AppClass extends React.Component {
   }
 
   onChange = (evt) => {
-    // You will need this to update the value of the input.
+    const { value } = evt.target;
+    this.setState({email: value});
   }
 
   onSubmit = (evt) => {
-    // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    const coordinate = this.getXY();
+    const newSubmission = {
+      x: coordinate.x,
+      y: coordinate.y,
+      steps: this.state.steps,
+      email: this.state.email,
+    }
+    axios.post(URL, newSubmission)
+      .then(res => {
+        this.setState({message: res.data.message})
+      })
+      .catch(err => console.error(err));
+    
+      this.setState({email: initialEmail})
   }
 
   render() {
@@ -56,31 +86,40 @@ export default class AppClass extends React.Component {
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates (2, 2)</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="coordinates">{this.getXYMessage()}</h3>
+          <h3 id="steps">You moved {this.state.steps} time {this.state.steps === 1 ? "" : "s"}</h3>
         </div>
         <div id="grid">
           {
             [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-              <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-                {idx === 4 ? 'B' : null}
+              <div key={idx} className={`square${idx === this.state.index ? ' active' : ''}`}>
+                {idx === this.state.index ? 'B' : null}
               </div>
             ))
           }
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
-          <button id="left">LEFT</button>
-          <button id="up">UP</button>
-          <button id="right">RIGHT</button>
-          <button id="down">DOWN</button>
-          <button id="reset">reset</button>
+          <button id="left" onClick={(e) => this.move(e, "left")}>LEFT</button>
+          <button id="up" onClick={(e) => this.move(e, "up")}>UP</button>
+          <button id="right" onClick={(e) => this.move(e, "right")}>RIGHT</button>
+          <button id="down" onClick={(e) => this.move(e, "down")}>DOWN</button>
+          <button id="reset" onClick={this.reset}>reset</button>
         </div>
-        <form>
-          <input id="email" type="email" placeholder="type email"></input>
-          <input id="submit" type="submit"></input>
+        <form onClick={this.onSubmit}>
+          <input 
+            id="email" 
+            type="email" 
+            placeholder="type email"
+            onChange={this.onChange}
+            value={this.state.email}
+          />
+          <input 
+            id="submit" 
+            type="submit"
+          />
         </form>
       </div>
     )
