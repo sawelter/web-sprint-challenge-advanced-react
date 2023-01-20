@@ -1,3 +1,5 @@
+// Todo - handle steps gracefully "You've moved 1 time" vs "You've moved 2 times"
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -47,11 +49,56 @@ export default function AppFunctional(props) {
     setMessage(initialMessage);
   }
 
+  // Move B to the left, or change the message to error if it cant be moved
+  function moveLeft() {
+    let idx = index;
 
-  function getNextIndex(direction) {
-    // This helper takes a direction ("left", "up", etc) and calculates what the next index
-    // of the "B" would be. If the move is impossible because we are at the edge of the grid,
-    // this helper should return the current index unchanged.
+    if(index !== 0 && index !== 3 && index !== 6) {
+      idx = idx - 1;
+      setSteps(steps + 1);
+    } else {
+      setMessage("You can't go left");
+    }
+
+    return idx;
+  }
+
+  // Move B to the right, or change the message to error if it cant be moved
+  function moveRight() {
+    let idx = index;
+
+    if(index !== 2 && index !== 5 && index !== 8) {
+      idx = idx + 1;
+      setSteps(steps + 1);
+    } else {
+      setMessage("You can't go right");
+    }
+
+    return idx;
+  }
+
+  // Move B up, or change the message to error if it cant be moved
+  function moveUp() {
+    let idx = index;
+    if(index > 2) {
+      idx -= 3;
+      setSteps(steps + 1);
+    } else {
+      setMessage("You can't go up");
+    }
+    return idx;
+  }
+
+  // Move B down, or change the message to error if it cant be moved
+  function moveDown() {
+    let idx = index;
+    if(index < 6) {
+      idx += 3;
+      setSteps(steps + 1);
+    } else {
+      setMessage("You can't go down");
+    }
+    return idx;
   }
 
   // 
@@ -59,26 +106,18 @@ export default function AppFunctional(props) {
     // This event handler can use the helper above to obtain a new index for the "B",
     // and change any states accordingly.
     evt.preventDefault();
+
+    setMessage(initialMessage);
+
     if(direction === "left") {
-      if(index === 0 || index === 3 || index === 6) {
-        setMessage("You can't go left");
-      } else {
-        setIndex(index - 1);
-      }
+      setIndex(moveLeft());
     } else if(direction === "right") {
-      if(index === 2 || index === 5 || index === 8) {
-        setMessage("You can't go right");
-      } else {
-        setIndex(index + 1);
-      }
+      setIndex(moveRight());
     } else if(direction === "up") {
-      if(index < 3) setMessage("You can't go up");
-      else setIndex(index - 3);
-    } else {
-      if(index > 5) setMessage("You can't go down");
-      else setIndex(index + 3);
+      setIndex(moveUp());
+    } else if(direction === "down") {
+      setIndex(moveDown());
     }
-    if(message === "") setSteps(steps + 1);
   }
 
 
@@ -116,7 +155,7 @@ export default function AppFunctional(props) {
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">{getXYMessage()}</h3>
-        <h3 id="steps">You moved 0 times</h3>
+        <h3 id="steps">You moved {steps} time{steps !== 1 ? "s" : ""}</h3>
       </div>
       <div id="grid">
         {
