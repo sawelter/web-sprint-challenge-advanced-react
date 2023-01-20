@@ -35,6 +35,7 @@ export default function AppFunctional(props) {
     return xyArray[index];
   }
 
+
   // Returns coordinates string displayed at top of screen
   function getXYMessage() {
     const coordinates = getXY();
@@ -126,6 +127,9 @@ export default function AppFunctional(props) {
   function onChange(evt) {
     const { value } = evt.target;
     setEmail(value);
+    if(email === "foo@bar.baz") {
+      throw console.error("Forbidden")
+    }
   }
 
   // Submits information to an API containing the current
