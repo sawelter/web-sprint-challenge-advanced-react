@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react';
+import axios from 'axios';
 
 // Suggested initial states
 const initialMessage = ''
@@ -7,6 +8,12 @@ const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
 
 export default function AppFunctional(props) {
+
+  const [message, setMessage] = useState(initialMessage);
+  const [email, setEmail] = useState(initialEmail);
+  const [steps, setSteps] = useState(initialSteps);
+  const [index, setIndex] = useState(initialIndex);
+
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
 
@@ -38,10 +45,13 @@ export default function AppFunctional(props) {
 
   function onChange(evt) {
     // You will need this to update the value of the input.
+    const { value } = evt.target;
+    setEmail(value);
   }
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
+
   }
 
   return (
@@ -53,8 +63,9 @@ export default function AppFunctional(props) {
       <div id="grid">
         {
           [0, 1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
-            <div key={idx} className={`square${idx === 4 ? ' active' : ''}`}>
-              {idx === 4 ? 'B' : null}
+            <div key={idx} 
+                 className={`square${idx === 4 ? ' active' : ''}`} >
+                {idx === 4 ? 'B' : null}
             </div>
           ))
         }
@@ -70,8 +81,17 @@ export default function AppFunctional(props) {
         <button id="reset">reset</button>
       </div>
       <form>
-        <input id="email" type="email" placeholder="type email"></input>
-        <input id="submit" type="submit"></input>
+        <input 
+          id="email" 
+          type="email" 
+          placeholder="type email"
+          onChange={(e) => onChange(e)}
+          value={email}
+        />
+        <input 
+          id="submit" 
+          type="submit"
+        />
       </form>
     </div>
   )
