@@ -20,20 +20,21 @@ export default function AppFunctional(props) {
   // You can delete them and build your own logic from scratch.
 
   function getXY() {
-    let x = 0;
-    let y = 0;
-    if(index === 0) { x = 1; y = 1; }
-    if(index === 1) { x = 2; y = 1; }
-    if(index === 2) { x = 3; y = 1; }
-    if(index === 3) { x = 1; y = 2; }
-    if(index === 4) { x = 2; y = 2; }
-    if(index === 5) { x = 3; y = 2; }
-    if(index === 6) { x = 1; y = 3; }
-    if(index === 7) { x = 2; y = 3; }
-    if(index === 8) { x = 3; y = 3; }
     // It it not necessary to have a state to track the coordinates.
-    // It's enough to know what index the "B" is at, to be able to calculate them.
-    return [x, y];
+    // It's enough to know what index the "B" is at, to be able to calculate them. 
+    const xyArray = [
+      { x: 1, y: 1},
+      { x: 2, y: 1},
+      { x: 3, y: 1},
+      { x: 1, y: 2},
+      { x: 2, y: 2},
+      { x: 3, y: 2},
+      { x: 1, y: 3},
+      { x: 2, y: 3},
+      { x: 3, y: 3},
+    ]
+
+    return xyArray[index];
   }
 
   function getXYMessage() {
@@ -66,10 +67,10 @@ export default function AppFunctional(props) {
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
     evt.preventDefault();
-    const [x, y] = getXY();
+    const coordinate = getXY();
     const newSubmission = {
-      x: x,
-      y: y,
+      x: coordinate.x,
+      y: coordinate.y,
       steps: steps,
       email: email
     }
