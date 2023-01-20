@@ -7,6 +7,8 @@ const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4 // the index the "B" is at
 
+const URL = "http://localhost:9000/api/result";
+
 export default function AppFunctional(props) {
 
   const [message, setMessage] = useState(initialMessage);
@@ -18,8 +20,20 @@ export default function AppFunctional(props) {
   // You can delete them and build your own logic from scratch.
 
   function getXY() {
+    let x = 0;
+    let y = 0;
+    if(index === 0) { x = 1; y = 1; }
+    if(index === 1) { x = 2; y = 1; }
+    if(index === 2) { x = 3; y = 1; }
+    if(index === 3) { x = 1; y = 2; }
+    if(index === 4) { x = 2; y = 2; }
+    if(index === 5) { x = 3; y = 2; }
+    if(index === 6) { x = 1; y = 3; }
+    if(index === 7) { x = 2; y = 3; }
+    if(index === 8) { x = 3; y = 3; }
     // It it not necessary to have a state to track the coordinates.
     // It's enough to know what index the "B" is at, to be able to calculate them.
+    return [x, y];
   }
 
   function getXYMessage() {
@@ -51,7 +65,21 @@ export default function AppFunctional(props) {
 
   function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
-
+    evt.preventDefault();
+    const [x, y] = getXY();
+    const newSubmission = {
+      x: x,
+      y: y,
+      steps: steps,
+      email: email
+    }
+    axios.post(URL, newSubmission)
+      .then(res => {
+        setMessage(res.data.message);
+      })
+      .catch(err => console.error(err));
+    
+      setEmail(initialEmail);
   }
 
   return (
@@ -71,7 +99,7 @@ export default function AppFunctional(props) {
         }
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
         <button id="left">LEFT</button>
@@ -80,7 +108,7 @@ export default function AppFunctional(props) {
         <button id="down">DOWN</button>
         <button id="reset">reset</button>
       </div>
-      <form>
+      <form onSubmit={onSubmit}>
         <input 
           id="email" 
           type="email" 
