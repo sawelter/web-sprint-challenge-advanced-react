@@ -44,7 +44,7 @@ export default class AppClass extends React.Component {
   }
 
   reset = () => {
-    this.setState = initialState;
+    this.setState(initialState);
   }
 
   incrementSteps() {
@@ -142,7 +142,10 @@ export default class AppClass extends React.Component {
       .then(res => {
         this.setState({message: res.data.message})
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.log(err);
+        this.setState({message: err.response.data.message});
+      });
     
       this.setState({email: initialEmail})
   }
@@ -174,7 +177,7 @@ export default class AppClass extends React.Component {
           <button id="down" onClick={(e) => this.move(e, "down")}>DOWN</button>
           <button id="reset" onClick={this.reset}>reset</button>
         </div>
-        <form onClick={this.onSubmit}>
+        <form onSubmit={this.onSubmit}>
           <input 
             id="email" 
             type="email" 
